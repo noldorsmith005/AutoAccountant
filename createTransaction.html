@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Create Transaction</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+
+    <form>
+        <div>
+            <label>Enter Type: </label>
+            <select id="label">
+                <option>Income</option>
+                <option>Expense</option>
+            </select>
+        </div>
+        <div>
+            <label>Enter Category: </label>
+            <select id="category"> 
+
+            </select>
+        </div>
+        <div>
+            <label>Enter Event: </label>
+            <input type="text" id="event">
+        </div>
+        <div>
+            <label>Enter Source or recipient: </label>
+            <input type="text" id="sr">
+        </div>
+        <div>
+            <label>Enter Amount: </label>
+            <input type="text" id="amount">
+        </div>
+        <div>
+            <label>Enter Transaction Type: </label>
+            <select id="tType">
+                <option>Check</option>
+                <option>Wire/Direct Transfer</option>
+                <option>Card</option>
+                <option>Cash</option>
+                <option>Online Transfer (Paypal,Venmo,etc.)</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <button onclick="submitForm()">Submit</button>
+    </form>
+
+
+
+
+    <script>
+        const {ipcRenderer} = require('electron');
+        ipcRenderer.send('getCats');
+
+        function submitForm(){
+            const label = document.getElementById("label");
+            const category = document.getElementById("category");
+            const event = document.getElementById("event");
+            const sr = document.getElementById("sr");
+            const amount = document.getElementById('amount');
+            const tType = document.getElementById("tType");
+
+            ipcRenderer.send('newtact', label.value, category.value, event.value, sr.value, amount.value, tType.value);
+        };
+
+        ipcRenderer.on('getCats', function(e, catList) {
+            const dropDown = document.getElementById('category');
+            for (cat of catList) {
+                const newOption = document.createElement('option');
+                newOption.innerText = cat;
+                dropDown.appendChild(newOption);
+            }
+        });
+        
+    </script>
+
+</body>
+</html>

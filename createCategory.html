@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Create Category</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+
+    <form>
+        <div>
+            <label>Enter name for new category: </label>
+            <input type="text" id="category">
+        </div>
+        <button onclick="submitForm()">Submit</button>
+    </form>
+
+
+    <script>
+        const {ipcRenderer} = require('electron');
+
+        function submitForm(){
+            const category = document.getElementById("category");
+
+            ipcRenderer.send('newcat', category.value);
+        };
+        
+    </script>
+
+</body>
+</html>

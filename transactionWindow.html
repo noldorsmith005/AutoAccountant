@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    td, th {
+        border: 1.5px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+</style>
+
+
+<head>
+    <title>Transaction</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+
+<body>
+
+    <!-- View Transaction -->
+
+    <div id="viewTact" style="display: block;"> 
+
+        <button onclick="edit()" style="float: right;">Edit</button>
+        
+        <table id="table" class="table">
+
+        </table>
+
+    </div>
+
+    <!-- Edit Transaction -->
+
+    <div id="editTact" style="display: none;">
+        <button onclick="back()" style="float: right;">Back</button>
+
+        <form>
+            <div>
+                <label>Enter Type: </label>
+                <select id="label">
+                    <option>Income</option>
+                    <option>Expense</option>
+                </select>
+            </div>
+            <div>
+                <label>Enter Event: </label>
+                <input type="text" id="event">
+            </div>
+            <div>
+                <label>Enter Source or recipient: </label>
+                <input type="text" id="sr">
+            </div>
+            <div>
+                <label>Enter Amount: </label>
+                <input type="text" id="amount">
+            </div>
+            <div>
+                <label>Enter Transaction Type: </label>
+                <select id="tType">
+                    <option>Check</option>
+                    <option>Wire/Direct Transfer</option>
+                    <option>Card</option>
+                    <option>Cash</option>
+                    <option>Online Transfer (Paypal,Venmo,etc.)</option>
+                    <option>Other</option>
+                </select>
+            </div>
+    
+            <button onclick="submitEdit()">Submit</button>
+            <button class="deleteButton" onclick="delTact()">Delete Transaction</button>
+        </form>
+    </div>
+
+ 
+    <script>
+        const {ipcRenderer} = require('electron');
+        var ID = 0;
+
+        function edit() {
+            const viewTact = document.getElementById("viewTact");
+            const editTact = document.getElementById("editTact");
+            viewTact.style.display = 'none';
+            editTact.style.display = 'block';
+        };
+
+        function back() {   
+            const viewTact = document.getElementById("viewTact");
+            const editTact = document.getElementById("editTact");
+            viewTact.style.display = 'block';
+            editTact.style.display = 'none';
+        };
+
+        function submitEdit() {
+            const label = document.getElementById("label");
+            const event = document.getElementById("event");
+            const sr = document.getElementById("sr");
+            const amount = document.getElementById('amount');
+            const tType = document.getElementById("tType");
+
+            ipcRenderer.send('edtact', label.value, event.value, sr.value, amount.value, tType.value, ID);
+        };
+
+        function delTact() {
+            ipcRenderer.send('deltact', ID);
+        };
+
+        ipcRenderer.on('transaction', function(e, label, event, sr, amount, tType, id) {
+            ID = id;
+
+            const table = document.getElementById("table");
+            const labelR = document.createElement('tr');
+            const labelH = document.createElement('th');
+            const labelD = document.createElement('td');
+            labelH.innerText = "Label:";
+            labelD.innerText = label;
+            labelR.appendChild(labelH);
+            labelR.appendChild(labelD);
+            const eventR = document.createElement('tr');
+            const eventH = document.createElement('th');
+            const eventD = document.createElement('td');
+            eventH.innerText = "For:";
+            eventD.innerText = event;
+            eventR.appendChild(eventH);
+            eventR.appendChild(eventD);
+            const srR = document.createElement('tr');
+            const srH = document.createElement('th');
+            const srD = document.createElement('td');
+            srH.innerText = "Source/Recipient:";
+            srD.innerText = sr;
+            srR.appendChild(srH);
+            srR.appendChild(srD);
+            const amountR = document.createElement('tr');
+            const amountH = document.createElement('th');
+            const amountD = document.createElement('td');
+            amountH.innerText = "Amount:";
+            amountD.innerText = amount;
+            amountR.appendChild(amountH);
+            amountR.appendChild(amountD);
+            const tTypeR = document.createElement('tr');
+            const tTypeH = document.createElement('th');
+            const tTypeD = document.createElement('td');
+            tTypeH.innerText = "Transaction Type:";
+            tTypeD.innerText = tType;
+            tTypeR.appendChild(tTypeH);
+            tTypeR.appendChild(tTypeD);
+
+            table.appendChild(labelR);
+            table.appendChild(eventR);
+            table.appendChild(srR);
+            table.appendChild(amountR);
+            table.appendChild(tTypeR);
+        });
+    </script>
+
+</body>
+
+</html>

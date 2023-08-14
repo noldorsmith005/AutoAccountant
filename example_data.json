@@ -1,0 +1,105 @@
+{
+    "transactions": [
+        {
+            "id": 1,
+            "label": "Income",
+            "category": "Ag",
+            "event": "sale of hay",
+            "sr": "ed",
+            "amount": 546,
+            "transaction_type": "Check"
+        },
+        {
+            "id": 2,
+            "label": "Expense",
+            "category": "Ag",
+            "event": "purchase of electric fence equipment",
+            "sr": "herche's farm supply",
+            "amount": 359,
+            "transaction_type": "Card"
+        },
+        {
+            "id": 3,
+            "label": "Expense",
+            "category": "Bills",
+            "event": "electricity",
+            "sr": "electric company",
+            "amount": 100,
+            "transaction_type": "Check"
+        },
+        {
+            "id": 293,
+            "label": "Expense",
+            "category": "Stocks",
+            "event": "by 100 shares of dow",
+            "sr": "stock broker",
+            "amount": 500,
+            "transaction_type": "Wire/Direct Transfer"
+        },
+        {
+            "id": 843,
+            "label": "Income",
+            "category": "Stocks",
+            "event": "dividend",
+            "sr": "company",
+            "amount": 2000,
+            "transaction_type": "Wire/Direct Transfer"
+        },
+        {
+            "id": 103,
+            "label": "Expense",
+            "category": "Bills",
+            "event": "heating bill",
+            "sr": "gas company",
+            "amount": 150,
+            "transaction_type": "Check"
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "category": "Ag",
+            "total_income": 546,
+            "total_expense": 359
+        },
+        {
+            "id": 2,
+            "category": "Bills",
+            "total_income": 0,
+            "total_expense": 250
+        },
+        {
+            "id": 3,
+            "category": "Stocks",
+            "total_income": 2000,
+            "total_expense": 500
+        },
+        {
+            "id": 9,
+            "category": "Business",
+            "total_income": 0,
+            "total_expense": 0
+        },
+        {
+            "id": 49,
+            "category": "Work Income",
+            "total_income": 0,
+            "total_expense": 0
+        }
+    ],
+    "IDS": [
+        1,
+        2,
+        3,
+        293,
+        843,
+        103
+    ],
+    "CIDS": [
+        1,
+        2,
+        3,
+        9,
+        49
+    ]
+}

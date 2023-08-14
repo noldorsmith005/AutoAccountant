@@ -1,0 +1,26 @@
+/* Main Window */
+
+body {
+    background-color: whitesmoke;
+}
+
+.refreshButton {
+    color: green;
+    margin: 25px;
+    float: left;
+}
+
+.returnButton {
+    margin: 25px;
+    float: right;
+}
+
+.deleteButton {
+    color: red;
+    margin: 25px;
+    float: right;
+}
+
+.click {
+    cursor: pointer;
+}

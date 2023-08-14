@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    td, th {
+        border: 1.5px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    .total {
+        background-color: lightgrey;
+    }
+</style>
+ 
+
+<head>
+    <title>Auto Accountant</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+
+<body class="body">
+
+    <!-- Main Table -->
+
+    <div id="mainTable" style="display: block;">
+
+        <h2>Auto Accountant</h2>
+
+        <button class="refreshButton" onclick="refresh()">Refresh</button>
+
+        <table id="table" class="table">
+            <tr>
+                <th> </th>
+                <th>Income</th>
+                <th>Expenses</th>
+                <th>Net Profits</th>
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Category Display Table -->
+
+    <div id="catTable" style="display: none;">
+
+        <h2 id="category"></h2>
+
+        <button class="returnButton" onclick="homePage()">Back</button>
+        <button onclick="editPage()">Edit Category</button>
+
+        <table class="table">
+            <tr id="income">
+                <th>Income</th>
+            </tr>
+            <tr id="expense">
+                <th>Expense</th>
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Edit Category Page -->
+
+    <div id="editCat" style="display: none;">
+        <button class="returnButton" onclick="back()">Back</button>
+        <form>
+            <div>
+                <label>Enter new name for category: </label>
+                <input type="text" id="categoryName">
+            </div>
+            <button onclick="editCat()">Submit</button>
+            <button class="deleteButton" onclick="delCat()">Delete Category</button>
+        </form>
+        <p style="color: red;">WARNING: Deleting a category delete all associated transactions.</p>
+    </div>
+
+
+
+    <!-- SCRIPT -->
+    <script>
+        const {ipcRenderer} = require('electron')
+        var ID = 0;
+
+
+        function removeChildNodes(parent) {
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild);
+                
+            }
+        }
+
+        function back() {
+            const mainTable = document.getElementById("mainTable");
+            const catTable = document.getElementById("catTable");
+            const editCat = document.getElementById("editCat");
+            mainTable.style.display = 'none';
+            editCat.style.display = 'none';
+            catTable.style.display = 'block';
+        }
+
+        function displayCat(e) {
+            ID = e.srcElement.id;
+            ipcRenderer.send('category', ID);
+
+            const mainTable = document.getElementById("mainTable");
+            const catTable = document.getElementById("catTable");
+            const editCat = document.getElementById("editCat");
+            mainTable.style.display = 'none';
+            editCat.style.display = 'none';
+            catTable.style.display = 'block';
+        }
+
+        function editCat() {
+            const category = document.getElementById("categoryName");
+
+            ipcRenderer.send('editCat', category.value, ID);
+        }
+
+        function delCat() {
+            ipcRenderer.send('delCat', ID);
+        }
+
+        function editPage() {
+            const mainTable = document.getElementById("mainTable");
+            const catTable = document.getElementById("catTable");
+            const editCat = document.getElementById("editCat");
+            mainTable.style.display = 'none';
+            catTable.style.display = 'none';
+            editCat.style.display = 'block';
+        }
+
+        function displayTact(e) {
+            id = e.srcElement.id;
+            ipcRenderer.send('transaction', id);
+        }
+
+        function homePage() {
+            const mainTable = document.getElementById("mainTable");
+            const catTable = document.getElementById("catTable");
+            const editCat = document.getElementById("editCat");
+            catTable.style.display = 'none';
+            editCat.style.display = 'none';
+            mainTable.style.display = 'block';
+
+            const container1 = document.querySelector('#income');
+            removeChildNodes(container1);
+            const container2 = document.querySelector('#expense');
+            removeChildNodes(container2);
+            const categoryHeader = document.getElementById("category");
+            categoryHeader.innerText = "";
+
+            const iHeader = document.createElement('th');
+            const eHeader = document.createElement('th');
+            iHeader.innerText = "Income";
+            eHeader.innerText = "Expense";
+            container1.appendChild(iHeader);
+            container2.appendChild(eHeader);
+        }
+
+        function refresh() {
+            const element = document.querySelector('#table');
+            removeChildNodes(element);
+
+            const titleRow = document.createElement('tr');
+            const h1 = document.createElement('th');
+            const h2 = document.createElement('th');
+            const h3 = document.createElement('th');
+            const h4 = document.createElement('th');
+
+            h2.innerText = "Income";
+            h3.innerText = "Expenses";
+            h4.innerText = "Net Profits";
+            titleRow.appendChild(h1);
+            titleRow.appendChild(h2);
+            titleRow.appendChild(h3);
+            titleRow.appendChild(h4);
+            element.appendChild(titleRow);
+
+            ipcRenderer.send('refresh');
+        }
+
+
+        ipcRenderer.on('block', function(e, id, category, total_income, total_expense, profit) {
+            const row = document.createElement('tr');
+            const cat = document.createElement('th');
+            const incdat = document.createElement('td');
+            const expdat = document.createElement('td');
+            const prof = document.createElement('td');
+            row.setAttribute('class', 'data');
+            cat.innerText = category;
+            cat.setAttribute('id', id);
+            cat.setAttribute('class', 'click');
+            cat.addEventListener('click', displayCat);
+            incdat.innerText = total_income;
+            expdat.innerText = total_expense;
+            prof.innerText = profit;
+            row.appendChild(cat);
+            row.appendChild(incdat);
+            row.appendChild(expdat);
+            row.appendChild(prof);
+            document.getElementById('table').appendChild(row);
+        });
+
+        ipcRenderer.on('totals', function(e, totalIncome, totalExpense, totalProfit) {
+            const row = document.createElement('tr');
+            const cat = document.createElement('th');
+            const incdat = document.createElement('td');
+            const expdat = document.createElement('td');
+            const prof = document.createElement('td');
+            row.setAttribute("class", "total");
+            cat.innerText = "Totals";
+            incdat.innerText = totalIncome;
+            expdat.innerText = totalExpense;
+            prof.innerText = totalProfit;
+            row.appendChild(cat);
+            row.appendChild(incdat);
+            row.appendChild(expdat);
+            row.appendChild(prof);
+            document.getElementById('table').appendChild(row);
+        });
+
+        ipcRenderer.on('category', function(e, category, id, label, amount) {
+            const catHeader = document.getElementById('category');
+            const iRow = document.getElementById('income');
+            const eRow = document.getElementById('expense');
+            const dBlock = document.createElement('td');
+            catHeader.innerText = category;
+            dBlock.setAttribute('id', id);
+            dBlock.setAttribute('class', 'click');
+            dBlock.innerText = amount;
+            dBlock.addEventListener('click', displayTact);
+
+            if (label == 'Income') {
+                iRow.appendChild(dBlock);
+            }
+            else if (label == 'Expense') {
+                eRow.appendChild(dBlock);
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
